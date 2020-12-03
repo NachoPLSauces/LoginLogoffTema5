@@ -1,3 +1,19 @@
+<?php
+/*
+* @author: Nacho del Prado Losada
+* @since: 01/12/2020
+* Descripción: Detalle.php se muestra cuando un usuario identificado pulsa el botón Detalle en Programa.php
+*/
+// Recuperamos la información de la sesión
+session_start();
+
+//Si no ha introducido unas creedenciales validas no se muestra la página
+//Se comprueba que el usuario se haya autentificado
+if (!isset($_SESSION['usuarioDAW202AppLoginLogoff'])) {
+    header('Location: ./Login.php');
+}
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -53,15 +69,6 @@
     </head>
     
     <body>
-        <?php
-            /*
-             * @author: Nacho del Prado Losada
-             * @since: 01/12/2020
-             * Descripción: Detalle.php se muestra cuando un usuario identificado pulsa el botón Detalle en Programa.php
-             */
-             session_start();
-        ?>
-
         <h2>Variables superglobales</h2>
         <table>
             <tr>

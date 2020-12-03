@@ -16,6 +16,29 @@ if (!isset($_SESSION['usuarioDAW202AppLoginLogoff'])) {
     header('Location: ./Login.php');
 }
 
+//Si existe la cookie que almacena el último idioma elegido por el usuario se guarda en una variable
+if(!isset($_COOKIE['idioma'])){
+    setcookie("idioma", "es", time()+86400);
+    header("Location: Programa.php");
+    exit;
+}
+//Cambiamos el idioma si el usuario elige uno distinto al actual
+if(isset($_REQUEST['es'])){
+    //Creación de una cookie que guarda la selección del idioma 'español'
+    setcookie("idioma", $_REQUEST['es'], time()+86400);
+    header("Location: Programa.php");
+    exit;
+}
+if(isset($_REQUEST['en'])){
+    //Creación de una cookie que guarda la selección del idioma 'inglés'
+    setcookie("idioma", $_REQUEST['en'], time()+86400);
+    header("Location: Programa.php");
+    exit;
+}
+    
+//Se guarda el valor de la cookie idioma en una variable
+$idioma = $_COOKIE['idioma'];
+
 //Si pulsa el botón Salir se le dirige al índice del Tema 5 y se cierra la sesión
 //Si pulsa el botón Detalle se le dirige al ejercicio00
 if (isset($_REQUEST['salir'])) {
@@ -72,6 +95,10 @@ unset($miDB);
         <main>
             <form name="input" action="<?php $_SERVER['PHP_SELF']?>" method="post">
                 <fieldset>
+                    <?php 
+                    ///Si el idioma elegido es 'español'
+                    if($idioma=="es"){
+                    ?> 
                     <div>
                         <h2>Bienvenido <?php echo $descripcionUsuario; ?></h2>
                     </div>
@@ -86,6 +113,32 @@ unset($miDB);
                     <div>
                         <input class="enviar" type="submit" name="detalle" value="Detalle"/>
                         <input class="enviar" type="submit" name="salir" value="Salir"/>
+                    </div>
+                    <?php 
+                    }
+                    //Si el idioma elegido es 'inglés'
+                    if($idioma=="en"){
+                    ?> 
+                    <div>
+                        <h2>Welcome <?php echo $descripcionUsuario; ?></h2>
+                    </div>
+                    
+                    <div>
+                        <p>Number of connections: <?php echo $numConexiones; ?></p>
+                        <?php if(!empty($_SESSION['fechaHoraUltimaConexionAnterior'])){?>
+                        <p>Last connection: <?php echo date("d-m-Y H:i:s", $_SESSION['fechaHoraUltimaConexionAnterior']); ?></p>
+                        <?php } ?>
+                    </div>
+                    
+                    <div>
+                        <input class="enviar" type="submit" name="detalle" value="Details"/>
+                        <input class="enviar" type="submit" name="salir" value="Logoff"/>
+                    </div>
+                    <?php } ?>
+                    
+                    <div class="idiomas">
+                        <button type='submit' name='es' value="es"><img src="../doc/images/spain.png" width="30" height="30"></button>
+                        <button type='submit' name='en' value="en"><img src="../doc/images/england.png" width="30" height="30"></button>
                     </div>
                 </fieldset>
             </form>

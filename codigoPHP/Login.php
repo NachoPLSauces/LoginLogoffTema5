@@ -1,4 +1,26 @@
 <?php
+//Si existe la cookie que almacena el último idioma elegido por el usuario se guarda en una variable
+if(!isset($_COOKIE['idioma'])){
+    setcookie("idioma", "es", time()+86400);
+    header("Location: Login.php");
+    exit;
+}
+//Cambiamos el idioma si el usuario elige uno distinto al actual
+if(isset($_REQUEST['es'])){
+    //Creación de una cookie que guarda la selección del idioma 'español'
+    setcookie("idioma", $_REQUEST['es'], time()+86400);
+    header("Location: Login.php");
+    exit;
+}
+if(isset($_REQUEST['en'])){
+    //Creación de una cookie que guarda la selección del idioma 'inglés'
+    setcookie("idioma", $_REQUEST['en'], time()+86400);
+    header("Location: Login.php");
+    exit;
+}
+    
+//Se guarda el valor de la cookie idioma en una variable
+$idioma = $_COOKIE['idioma'];
 /*
  * @author: Nacho del Prado Losada
  * @since: 30/11/2020
@@ -13,7 +35,6 @@ $error = "";
 if(isset($_REQUEST['enviar'])){
     $usuario = $_REQUEST['usuario'];
     $password = $_REQUEST['password'];
-    
     
     if($usuario == null || $password == null){
         $error = "Debes introducir un usuario y una contraseña";
@@ -93,22 +114,84 @@ if(isset($_REQUEST['enviar'])){
         </header>
         
         <main>
+            <div class="title">
+                <div class="logo">
+                    <img src="../doc/images/logo.png" alt="logo">
+                </div>
+
+                <div>
+                    <h2><a href="../../proyectoDWES/indexProyectoDWES.php">Proyecto DWES</a></h2>
+                </div>				
+            </div>
+            
             <form name="input" action="<?php $_SERVER['PHP_SELF']?>" method="post">
                 <fieldset>
                     <div>
-                        <h2>Iniciar sesión</h2>
+                        <h2>
+                            <?php 
+                            //Se muestra en el idioma guardado en la cookie 'idioma'
+                            //Si no existe, se muestra en español
+                            if($idioma=="en"){
+                                echo 'Login';
+                            }
+                            elseif($idioma=="es"){
+                                echo 'Iniciar sesión';
+                            }
+                            
+                            ?>
+                        </h2>
                     </div>
 
                     <div>
-                        <label for='usuario'>Usuario </label>
+                        <label for='usuario'>
+                            <?php 
+                            //Se muestra en el idioma guardado en la cookie 'idioma'
+                            if($idioma=="en"){
+                                echo 'User ';
+                            }
+                            elseif($idioma=="es"){
+                                echo 'Usuario ';
+                            }
+                            
+                            ?> 
+                        </label>
                         <input type='text' id='usuario' name='usuario'/>
 
-                        <label for='password' >Contraseña </label>
+                        <label for='password' >
+                            <?php 
+                            //Se muestra en el idioma guardado en la cookie 'idioma'
+                            if($idioma=="en"){
+                                echo 'Password ';
+                            }
+                            elseif($idioma=="es"){
+                                echo 'Contraseña ';
+                            }
+                            
+                            ?>
+                        </label>
                         <input type='password' id="password" name='password'/>
                         
                         <span><?php echo $error; ?></span>
-
-                        <input class="enviar" type='submit' name='enviar' value='Enviar' />
+                        
+                        <?php 
+                        //Se muestra en el idioma guardado en la cookie 'idioma'
+                        if($idioma=="en"){
+                        ?>
+                        <input class="enviar" type='submit' name='enviar' value='Login' />
+                        <?php 
+                        }
+                        if($idioma=="es"){
+                        ?>
+                        <input class="enviar" type='submit' name='enviar' value='Iniciar sesión' />
+                        <?php 
+                        }
+                        ?>
+                        
+                        <div class="idiomas">
+                            <button type='submit' name='es' value="es"><img src="../doc/images/spain.png" width="30" height="30"></button>
+                            <button type='submit' name='en' value="en"><img src="../doc/images/england.png" width="30" height="30"></button>
+                        </div>
+                        
                     </div>
                 </fieldset>
             </form>
