@@ -28,7 +28,7 @@ header h1{
 }
 
 main{
-    width: 100%;height: 80vh;
+    width: 100%;height: 90vh;
     padding: 5vh 5vh;
 }
 
@@ -118,6 +118,27 @@ fieldset div span{
     
 }
 .enviar:hover{
+    background-color: cadetblue;
+}
+
+.crearCuenta{
+    padding: 0 20px;
+}
+.crearCuenta p{
+    text-align: center;
+    font-size: 10px;
+    line-height: 10px;
+    margin-bottom: 0;
+    color: grey;
+    margin-top: 20px;
+}
+.crearCuenta input{
+    margin-top: 15px;
+    color: cadetblue;
+    background-color: white;
+}
+.crearCuenta input:hover{
+    color: white;
     background-color: cadetblue;
 }
 

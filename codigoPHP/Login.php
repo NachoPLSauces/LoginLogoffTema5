@@ -1,4 +1,10 @@
 <?php
+/*
+ * @author: Nacho del Prado Losada
+ * @since: 30/11/2020
+ * Descripción: Login.php permite controlar el acceso de los usuarios en la aplicación LoginLogoff
+ */
+
 //Si existe la cookie que almacena el último idioma elegido por el usuario se guarda en una variable
 if(!isset($_COOKIE['idioma'])){
     setcookie("idioma", "es", time()+86400);
@@ -21,15 +27,16 @@ if(isset($_REQUEST['en'])){
     
 //Se guarda el valor de la cookie idioma en una variable
 $idioma = $_COOKIE['idioma'];
-/*
- * @author: Nacho del Prado Losada
- * @since: 30/11/2020
- * Descripción: Login.php permite controlar el acceso de los usuarios en la aplicación LoginLogoff
- */
 
 //Llamada al fichero de almacenamiento de consantes en PDO
 require_once '../config/confDBPDO.php';
 $error = "";
+
+//Comprobamos si el usuario ha elegido crear una cuenta
+if(isset($_REQUEST['crear'])){
+    header("Location: registro.php");
+    exit;
+}
 
 //Comprobamos si se ha enviado el formulario
 if(isset($_REQUEST['enviar'])){
@@ -194,6 +201,11 @@ if(isset($_REQUEST['enviar'])){
                         
                     </div>
                 </fieldset>
+                
+                <div class="crearCuenta">
+                    <p>¿Eres nuevo?</p>
+                    <input class="enviar" type='submit' name='crear' value='Crea tu cuenta' />
+                </div>
             </form>
         </main>
         
