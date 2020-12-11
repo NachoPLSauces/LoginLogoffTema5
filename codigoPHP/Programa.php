@@ -43,8 +43,10 @@ $idioma = $_COOKIE['idioma'];
 //Si pulsa el botón Detalle se le dirige al ejercicio00
 if (isset($_REQUEST['salir'])) {
     session_destroy();
-    header('Location: ../../proyectoDWES/indexProyectoDWES.php');
-    
+    header('Location: ./Login.php');
+
+} else if (isset($_REQUEST['editar'])){
+    header('Location: ./editarPerfil.php');
 } else if (isset($_REQUEST['detalle'])) {
     header('Location: ./Detalle.php');
 }
@@ -112,6 +114,7 @@ unset($miDB);
                     
                     <div>
                         <input class="enviar" type="submit" name="detalle" value="Detalle"/>
+                        <input class="enviar" type="submit" name="editar" value="Editar perfil"/>
                         <input class="enviar" type="submit" name="salir" value="Salir"/>
                     </div>
                     <?php 
@@ -132,6 +135,7 @@ unset($miDB);
                     
                     <div>
                         <input class="enviar" type="submit" name="detalle" value="Details"/>
+                        <input class="enviar" type="submit" name="editar" value="Edit"/>
                         <input class="enviar" type="submit" name="salir" value="Logoff"/>
                     </div>
                     <?php } ?>

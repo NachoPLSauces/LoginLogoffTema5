@@ -5,8 +5,8 @@
  * Descripción: registro.php permite crear usuarios en la aplicación LoginLogoff
  */
 
-//Si el usuario pulsa "Salir" le dirijo al Login
-if(isset($_REQUEST['salir'])){
+//Si el usuario pulsa "Cancelar" le dirijo al Login
+if(isset($_REQUEST['cancelar'])){
     header("Location: ./Login.php");
     exit;
 }
@@ -35,7 +35,7 @@ if(isset($_REQUEST['enviar'])){
     //Comprobar que el campo nombre se ha rellenado con alfabéticos
     $aErrores["usuario"] = validacionFormularios::comprobarAlfabetico($_REQUEST['usuario'], 15, 3, OBLIGATORIO);
     
-    if($aErrores["usuario" == null]){
+    if($aErrores["usuario"] == null){
         try{
             //Instanciar un objeto PDO y establecer la conexión con la base de datos
             $miDB = new PDO(DSN, USER, PASSWORD);
@@ -101,7 +101,8 @@ if($entradaOK){
         $consulta = $miDB->prepare($sql);
         $consulta->bindParam(":CodUsuario", $aRespuestas['usuario']);
         $consulta->bindParam(":DescUsuario", $aRespuestas['descripcion']);
-        $consulta->bindParam(":Password", $aRespuestas['password']);
+        $passwordCodificado = hash("sha256",$aRespuestas['usuario'].$aRespuestas['password']);
+        $consulta->bindParam(":Password", $passwordCodificado);
         $consulta->bindParam(":FechaHoraUltimaConexion", time());
         $consulta->execute();
 
@@ -109,7 +110,7 @@ if($entradaOK){
         session_start();
 
         //Se guarda el código del usuario para comprobar si el usuario ha pasado por el Login al visualizar las demás páginas 
-        $_SESSION['usuarioDAW202AppLoginLogoff'] = $registro->CodUsuario;    
+        $_SESSION['usuarioDAW202AppLoginLogoff'] = $aRespuestas['usuario'];    
         
         $_SESSION['fechaHoraUltimaConexionAnterior'] = null;
 
@@ -216,7 +217,7 @@ if($entradaOK){
                         
                         <input class="enviar" type='submit' name='enviar' value='Crear cuenta' />
                         
-                        <input class="enviar" type='submit' name='salir' value='Salir' />
+                        <input class="enviar" type='submit' name='cancelar' value='Cancelar' />
                     </div>
                 </fieldset>
             </form>
