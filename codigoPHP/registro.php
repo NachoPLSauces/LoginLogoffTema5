@@ -1,30 +1,30 @@
 <?php
 /*
  * @author: Nacho del Prado Losada
- * @since: 09/12/2020
+ * @since: 06/01/2021
  * Descripción: registro.php permite crear usuarios en la aplicación LoginLogoff
  */
 
+//Llamada al fichero de almacenamiento de consantes en PDO
+require_once '../config/confDBPDO.php';
+require_once '../core/201020libreriaValidacion.php';
+     
 //Si el usuario pulsa "Cancelar" le dirijo al Login
 if(isset($_REQUEST['cancelar'])){
     header("Location: ./Login.php");
     exit;
 }
 
-//Llamada al fichero de almacenamiento de consantes en PDO
-require_once '../config/confDBPDO.php';
-require_once '../core/201020libreriaValidacion.php';
-            
-//Array de errores inicializado a null
-$aErrores = ["usuario" => null,
-             "descripcion" => null,
-             "password" => null];
-
 //Variable obligatorio inicializada a 1
 define("OBLIGATORIO", 1);
 
 //Varible de entrada correcta inicializada a true
-$entradaOK = true;           
+$entradaOK = true;       
+
+//Array de errores inicializado a null
+$aErrores = ["usuario" => null,
+             "descripcion" => null,
+             "password" => null];   
 
 //Array de respuestas inicializado a null
 $aRespuestas = ["usuario" => null,
@@ -101,8 +101,7 @@ if($entradaOK){
         $consulta = $miDB->prepare($sql);
         $consulta->bindParam(":CodUsuario", $aRespuestas['usuario']);
         $consulta->bindParam(":DescUsuario", $aRespuestas['descripcion']);
-        $passwordCodificado = hash("sha256",$aRespuestas['usuario'].$aRespuestas['password']);
-        $consulta->bindParam(":Password", $passwordCodificado);
+        $consulta->bindParam(":Password", hash("sha256",$aRespuestas['usuario'].$aRespuestas['password']));
         $consulta->bindParam(":FechaHoraUltimaConexion", time());
         $consulta->execute();
 
@@ -160,7 +159,6 @@ if($entradaOK){
 
                     <div>
                         <label for='usuario'>Usuario </label><br>
-                        
                         <span style="color:red">
                             <?php
                             //Imprime el error en el caso de que se introduzca mal el nombre
@@ -177,10 +175,7 @@ if($entradaOK){
                             }
                         ?>"/>
                     
-                        
-
                         <label for='descripcion' >Descripción </label><br>
-                    
                         <span style="color:red">
                             <?php
                             //Imprime el error en el caso de que se introduzca mal el nombre
@@ -198,7 +193,6 @@ if($entradaOK){
                         ?>"/>
                         
                         <label for='password' >Contraseña </label><br>
-                    
                         <span style="color:red">
                             <?php
                             //Imprime el error en el caso de que se introduzca mal el nombre

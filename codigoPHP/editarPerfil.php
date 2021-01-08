@@ -1,8 +1,8 @@
 <?php
 /*
  * @author: Nacho del Prado Losada
- * @since: 09/12/2020
- * Descripción: registro.php permite crear usuarios en la aplicación LoginLogoff
+ * @since: 06/01/2021
+ * Descripción: permite editar información del usuario
  */
 
 //Llamada al fichero de almacenamiento de consantes en PDO
@@ -11,18 +11,49 @@ require_once '../core/201020libreriaValidacion.php';
 
 // Recuperamos la información de la sesión
 session_start();
+
 //Se comprueba que el usuario se haya autentificado
 if (!isset($_SESSION['usuarioDAW202AppLoginLogoff'])) {
     header('Location: ./Login.php');
     exit;
 }
 
+//Si el usuario pulsa "Cambiar contraseña" le dirijo a cambiarPassword.php
+if(isset($_REQUEST['cambiar'])){
+    header("Location: ./cambiarPassword.php");
+    exit;
+}
+//Si el usuario pulsa "Borrar cuenta" borra la cuenta de la base de datos
+if(isset($_REQUEST['borrar'])){
+    try{
+        //Instanciar un objeto PDO y establecer la conexión con la base de datos
+        $miDB = new PDO(DSN, USER, PASSWORD);
+        //Establecer PDO::ERRMODE_EXCEPTION como valor del atributo PDO::ATTR_ERRMODE
+        $miDB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        //Almaceno la consulta a sql en una variable
+        $sql = "DELETE FROM Usuario WHERE CodUsuario=:CodUsuario";
+
+        //Ejecuto la consulta
+        $consulta = $miDB->prepare($sql);
+        $consulta->bindParam(":CodUsuario", $_SESSION['usuarioDAW202AppLoginLogoff']);
+        $consulta->execute();
+
+    } catch (PDOException $pdoe) { 
+        echo "<p style='color: red'>ERROR: " . $pdoe->getMessage() . "</p>";
+    }  
+    unset($miDB);
+    
+    //Finalizo la sesión y se envía al usuario al Login
+    session_destroy();
+    header("Location: ./Login.php");
+    exit;
+}
 //Si el usuario pulsa "Cancelar" le dirijo a Programa.php
 if(isset($_REQUEST['cancelar'])){
     header("Location: ./Programa.php");
     exit;
 }
-
 //Si el usuario pulsa "Cerrar sesión" le dirijo al Login
 if(isset($_REQUEST['salir'])){
     session_destroy();
@@ -154,7 +185,9 @@ if($entradaOK){
                     </div>
                     
                     <div>
+                        <input class="enviar" type="submit" name="cambiar" value="Cambiar contraseña"/>
                         <input class="enviar" type="submit" name="editar" value="Editar campos"/>
+                        <input class="enviar" type="submit" name="borrar" value="Borrar cuenta"/>
                         <input class="enviar" type="submit" name="cancelar" value="Cancelar"/>
                         <input class="enviar" type="submit" name="salir" value="Cerrar sesión"/>
                     </div>

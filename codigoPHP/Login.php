@@ -1,7 +1,7 @@
 <?php
 /*
  * @author: Nacho del Prado Losada
- * @since: 30/11/2020
+ * @since: 06/01/2021
  * Descripción: Login.php permite controlar el acceso de los usuarios en la aplicación LoginLogoff
  */
 
@@ -24,9 +24,6 @@ if(isset($_REQUEST['en'])){
     header("Location: Login.php");
     exit;
 }
-    
-//Se guarda el valor de la cookie idioma en una variable
-$idioma = $_COOKIE['idioma'];
 
 //Llamada al fichero de almacenamiento de consantes en PDO
 require_once '../config/confDBPDO.php';
@@ -40,10 +37,7 @@ if(isset($_REQUEST['crear'])){
 
 //Comprobamos si se ha enviado el formulario
 if(isset($_REQUEST['enviar'])){
-    $usuario = $_REQUEST['usuario'];
-    $password = $_REQUEST['password'];
-    
-    if($usuario == null || $password == null){
+    if($_REQUEST['usuario'] == null || $_REQUEST['password'] == null){
         $error = "Debes introducir un usuario y una contraseña";
     }
     else{
@@ -57,10 +51,9 @@ if(isset($_REQUEST['enviar'])){
             $sql = "SELECT * FROM Usuario WHERE CodUsuario=:CodUsuario AND Password=:Password";
             //Ejecuto la consulta
             $consulta = $miDB->prepare($sql);
-            $consulta->bindParam(":CodUsuario", $usuario);
+            $consulta->bindParam(":CodUsuario", $_REQUEST['usuario']);
 
-            $passwordCodificado = hash("sha256", $usuario.$password);
-            $consulta->bindParam(":Password", $passwordCodificado);
+            $consulta->bindParam(":Password", hash("sha256", $_REQUEST['usuario'].$_REQUEST['password']));
             $consulta->execute();
 
             $registro = $consulta->fetchObject();
@@ -71,7 +64,7 @@ if(isset($_REQUEST['enviar'])){
                 $ultimaConexion = $registro->FechaHoraUltimaConexion; 
                 
                 //Se actualiza la última conexión registrada en la base de datos
-                $sql2 = "UPDATE Usuario SET NumConexiones=NumConexiones+1, FechaHoraUltimaConexion=:fechaHoraUltimaConexion WHERE CodUsuario='{$usuario}'";
+                $sql2 = "UPDATE Usuario SET NumConexiones=NumConexiones+1, FechaHoraUltimaConexion=:fechaHoraUltimaConexion WHERE CodUsuario='{$_REQUEST['usuario']}'";
                 $consulta2 = $miDB->prepare($sql2);
                 $timestamp = time();
                 $consulta2->bindParam(":fechaHoraUltimaConexion", $timestamp);
@@ -138,10 +131,10 @@ if(isset($_REQUEST['enviar'])){
                             <?php 
                             //Se muestra en el idioma guardado en la cookie 'idioma'
                             //Si no existe, se muestra en español
-                            if($idioma=="en"){
+                            if($_COOKIE['idioma']=="en"){
                                 echo 'Login';
                             }
-                            elseif($idioma=="es"){
+                            elseif($_COOKIE['idioma']=="es"){
                                 echo 'Iniciar sesión';
                             }
                             
@@ -150,49 +143,15 @@ if(isset($_REQUEST['enviar'])){
                     </div>
 
                     <div>
-                        <label for='usuario'>
-                            <?php 
-                            //Se muestra en el idioma guardado en la cookie 'idioma'
-                            if($idioma=="en"){
-                                echo 'User ';
-                            }
-                            elseif($idioma=="es"){
-                                echo 'Usuario ';
-                            }
-                            
-                            ?> 
-                        </label>
+                        <label for='usuario'>Usuario </label>
                         <input type='text' id='usuario' name='usuario'/>
 
-                        <label for='password' >
-                            <?php 
-                            //Se muestra en el idioma guardado en la cookie 'idioma'
-                            if($idioma=="en"){
-                                echo 'Password ';
-                            }
-                            elseif($idioma=="es"){
-                                echo 'Contraseña ';
-                            }
-                            
-                            ?>
-                        </label>
+                        <label for='password' >Contraseña </label>
                         <input type='password' id="password" name='password'/>
                         
                         <span><?php echo $error; ?></span>
                         
-                        <?php 
-                        //Se muestra en el idioma guardado en la cookie 'idioma'
-                        if($idioma=="en"){
-                        ?>
-                        <input class="enviar" type='submit' name='enviar' value='Login' />
-                        <?php 
-                        }
-                        if($idioma=="es"){
-                        ?>
                         <input class="enviar" type='submit' name='enviar' value='Iniciar sesión' />
-                        <?php 
-                        }
-                        ?>
                         
                         <div class="idiomas">
                             <button type='submit' name='es' value="es"><img src="../doc/images/spain.png" width="30" height="30"></button>

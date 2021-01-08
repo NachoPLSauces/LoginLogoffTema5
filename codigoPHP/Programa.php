@@ -1,7 +1,7 @@
 <?php
 /*
  * @author: Nacho del Prado Losada
- * @since: 01/12/2020
+ * @since: 06/01/2021
  * Descripción: Programa.php se muestra una vez el usuario se ha identificado correctamente
  */
 //Llamada al fichero de almacenamiento de consantes en PDO
@@ -10,45 +10,28 @@ require_once '../config/confDBPDO.php';
 // Recuperamos la información de la sesión
 session_start();
 
-//Si no ha introducido unas creedenciales validas no se muestra la página
-//Se comprueba que el usuario se haya autentificado
+//Se comprueba que el usuario se haya autentificado, en caso negativo, se le dirige al Login
 if (!isset($_SESSION['usuarioDAW202AppLoginLogoff'])) {
     header('Location: ./Login.php');
 }
 
-//Si existe la cookie que almacena el último idioma elegido por el usuario se guarda en una variable
+//Si no existe la cookie que almacena el último idioma elegido por el usuario, se le da el valor "es"
 if(!isset($_COOKIE['idioma'])){
     setcookie("idioma", "es", time()+86400);
     header("Location: Programa.php");
     exit;
 }
-//Cambiamos el idioma si el usuario elige uno distinto al actual
-if(isset($_REQUEST['es'])){
-    //Creación de una cookie que guarda la selección del idioma 'español'
-    setcookie("idioma", $_REQUEST['es'], time()+86400);
-    header("Location: Programa.php");
-    exit;
-}
-if(isset($_REQUEST['en'])){
-    //Creación de una cookie que guarda la selección del idioma 'inglés'
-    setcookie("idioma", $_REQUEST['en'], time()+86400);
-    header("Location: Programa.php");
-    exit;
-}
-    
-//Se guarda el valor de la cookie idioma en una variable
-$idioma = $_COOKIE['idioma'];
 
-//Si pulsa el botón Salir se le dirige al índice del Tema 5 y se cierra la sesión
-//Si pulsa el botón Detalle se le dirige al ejercicio00
-if (isset($_REQUEST['salir'])) {
+if (isset($_REQUEST['salir'])) { //Si el usuario pulsa "Salir" se le dirige al Login
     session_destroy();
-    header('Location: ./Login.php');
-
-} else if (isset($_REQUEST['editar'])){
-    header('Location: ./editarPerfil.php');
-} else if (isset($_REQUEST['detalle'])) {
-    header('Location: ./Detalle.php');
+    header('Location: ./Login.php'); 
+    exit;
+} else if (isset($_REQUEST['editar'])){ //Si el usuario pulsa Editar se le dirige a editarPerfil
+    header('Location: ./editarPerfil.php'); 
+    exit;
+} else if (isset($_REQUEST['detalle'])) { //Si el usuario pulsa "Detalle" se muestran las variables superglobales y phpinfo
+    header('Location: ./Detalle.php'); 
+    exit;
 }
 
 try{
@@ -62,20 +45,20 @@ try{
     //Ejecuto la consulta
     $consulta = $miDB->prepare($sql);
     
-    $usuario = $_SESSION['usuarioDAW202AppLoginLogoff'];
-    $consulta->bindParam(":CodUsuario", $usuario);
+    $consulta->bindParam(":CodUsuario", $_SESSION['usuarioDAW202AppLoginLogoff']);
     $consulta->execute();
     
     $registro = $consulta->fetchObject();
     
+    //Variables que guardan información del usuario
     $descripcionUsuario = $registro->DescUsuario;
     $numConexiones = $registro->NumConexiones;
     
-    
+   
 }catch (PDOException $pdoe){
     echo "<p style='color: red'>ERROR: " . $pdoe->getMessage() . "</p>";
 }
-unset($miDB);
+unset($miDB); //Finaliza la conexión con la base de datos
 ?> 
 
 <!DOCTYPE html>
@@ -97,12 +80,19 @@ unset($miDB);
         <main>
             <form name="input" action="<?php $_SERVER['PHP_SELF']?>" method="post">
                 <fieldset>
-                    <?php 
-                    ///Si el idioma elegido es 'español'
-                    if($idioma=="es"){
-                    ?> 
                     <div>
-                        <h2>Bienvenido <?php echo $descripcionUsuario; ?></h2>
+                        <h2>
+                        <?php 
+                        ///Si el idioma elegido es 'español'
+                        if($_COOKIE['idioma']=="es"){
+                            echo 'Bienvenido ';
+                        }
+                        //Si el idioma elegido es 'inglés'
+                        elseif($_COOKIE['idioma']=="en"){
+                            echo 'Welcome ';
+                        }
+                        echo $descripcionUsuario; ?>
+                        </h2>
                     </div>
                     
                     <div>
@@ -116,33 +106,6 @@ unset($miDB);
                         <input class="enviar" type="submit" name="detalle" value="Detalle"/>
                         <input class="enviar" type="submit" name="editar" value="Editar perfil"/>
                         <input class="enviar" type="submit" name="salir" value="Salir"/>
-                    </div>
-                    <?php 
-                    }
-                    //Si el idioma elegido es 'inglés'
-                    if($idioma=="en"){
-                    ?> 
-                    <div>
-                        <h2>Welcome <?php echo $descripcionUsuario; ?></h2>
-                    </div>
-                    
-                    <div>
-                        <p>Number of connections: <?php echo $numConexiones; ?></p>
-                        <?php if(!empty($_SESSION['fechaHoraUltimaConexionAnterior'])){?>
-                        <p>Last connection: <?php echo date("d-m-Y H:i:s", $_SESSION['fechaHoraUltimaConexionAnterior']); ?></p>
-                        <?php } ?>
-                    </div>
-                    
-                    <div>
-                        <input class="enviar" type="submit" name="detalle" value="Details"/>
-                        <input class="enviar" type="submit" name="editar" value="Edit"/>
-                        <input class="enviar" type="submit" name="salir" value="Logoff"/>
-                    </div>
-                    <?php } ?>
-                    
-                    <div class="idiomas">
-                        <button type='submit' name='es' value="es"><img src="../doc/images/spain.png" width="30" height="30"></button>
-                        <button type='submit' name='en' value="en"><img src="../doc/images/england.png" width="30" height="30"></button>
                     </div>
                 </fieldset>
             </form>
@@ -158,10 +121,5 @@ unset($miDB);
                 <h3>ignacio.pralos@educa.jcyl.es</h3>
             </div>
         </footer>
-    </body>
-</html>
-    
-    <body>
-             
     </body>
 </html>
